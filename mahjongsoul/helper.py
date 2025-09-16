@@ -37,7 +37,9 @@ class Player:
         self.team = team_name
     
     def getHighestGamePoints(self):
-        return max([game["total_point"] for game in self.games]) if len(self.games) != 0 else 0
+        start = 25000
+        uma = [45000,5000,-15000,-35000]
+        return max([game["total_point"]-uma[game["rank"]-1]+start for game in self.games]) if len(self.games) != 0 else 0
     
     def getTop(self):
         return (self.rank_count[0]) / self.total_game_count if self.total_game_count != 0 else 0
@@ -92,7 +94,7 @@ class PlayerPool:
             data["TOP率"].append(player.getTop())
             data["连对率"].append(player.getRentai())
             data["避四率"].append(player.get4thAvoidance())
-            data["最高分"].append(player.getHighestGamePoints() / 1000)
+            data["最高分"].append(player.getHighestGamePoints())
         
         return data
 
