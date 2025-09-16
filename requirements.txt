@@ -1,0 +1,6 @@
+aiohttp==3.12.15
+pandas==2.3.2
+python-dotenv==1.1.1
+Requests==2.32.5
+websockets==15.0.1
+xlsxwriter==3.2.9

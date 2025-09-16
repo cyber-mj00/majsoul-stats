@@ -1,0 +1,372 @@
+[
+    {
+        "_id": "68c790d34317018da37f85a5",
+        "name": "KONAMI麻雀格闘俱楽部",
+        "players": [
+            {
+                "_id": "684fd8ce52bffdd903db878f",
+                "nickname": "云木i",
+                "zone": null
+            },
+            {
+                "_id": "68c78f204317018da37f8560",
+                "nickname": "月明朝",
+                "zone": null
+            },
+            {
+                "_id": "68c78f204317018da37f8561",
+                "nickname": "橡胶果实",
+                "zone": null
+            },
+            {
+                "_id": "68c78f204317018da37f8562",
+                "nickname": "鬼曳魅",
+                "zone": null
+            },
+            {
+                "_id": "68c78f214317018da37f8564",
+                "nickname": "随便搞搞111",
+                "zone": null
+            },
+            {
+                "_id": "68c78f214317018da37f8565",
+                "nickname": "修罗牌浪落尘",
+                "zone": null
+            }
+        ],
+        "color": "ff0000"
+    },
+    {
+        "_id": "68c790d34317018da37f85a6",
+        "name": "赤坂ドリブンズ",
+        "players": [
+            {
+                "_id": "68c790464317018da37f8567",
+                "nickname": "我不敢A上去",
+                "zone": null
+            },
+            {
+                "_id": "68c790464317018da37f8568",
+                "nickname": "芒果菓菓",
+                "zone": null
+            },
+            {
+                "_id": "68c790464317018da37f8569",
+                "nickname": "gamexo",
+                "zone": null
+            },
+            {
+                "_id": "68c790464317018da37f856a",
+                "nickname": "老liuliu",
+                "zone": null
+            },
+            {
+                "_id": "68c790474317018da37f856b",
+                "nickname": "乔思",
+                "zone": null
+            },
+            {
+                "_id": "68c790474317018da37f856c",
+                "nickname": "小鸟游亦心",
+                "zone": null
+            }
+        ],
+        "color": "92d050"
+    },
+    {
+        "_id": "68c790d44317018da37f85a7",
+        "name": "TEAM RAIDEN/雷電",
+        "players": [
+            {
+                "_id": "68c790484317018da37f856e",
+                "nickname": "姬松マスコット",
+                "zone": null
+            },
+            {
+                "_id": "68c790484317018da37f856f",
+                "nickname": "猪小武yo",
+                "zone": null
+            },
+            {
+                "_id": "68c790484317018da37f8570",
+                "nickname": "是青梅来煮酒",
+                "zone": null
+            },
+            {
+                "_id": "68c790484317018da37f8571",
+                "nickname": "Lucky空",
+                "zone": null
+            },
+            {
+                "_id": "68c790484317018da37f8572",
+                "nickname": "萌新只",
+                "zone": null
+            },
+            {
+                "_id": "68c790484317018da37f8573",
+                "nickname": "你是我的喵",
+                "zone": null
+            }
+        ],
+        "color": "ffff00"
+    },
+    {
+        "_id": "68c790d54317018da37f85a8",
+        "name": "セガサミ一フェニックス",
+        "players": [
+            {
+                "_id": "68c790494317018da37f8575",
+                "nickname": "RAS_LOCK",
+                "zone": null
+            },
+            {
+                "_id": "68c790494317018da37f8576",
+                "nickname": "liya韵伊",
+                "zone": null
+            },
+            {
+                "_id": "68c7904a4317018da37f8577",
+                "nickname": "西野。",
+                "zone": null
+            },
+            {
+                "_id": "68c7904a4317018da37f8578",
+                "nickname": "菜_瑠美姉推し",
+                "zone": null
+            },
+            {
+                "_id": "68c7904a4317018da37f8579",
+                "nickname": "桑煜",
+                "zone": null
+            },
+            {
+                "_id": "68c7904a4317018da37f857a",
+                "nickname": "芒果椰椰奶",
+                "zone": null
+            }
+        ],
+        "color": "ffc000"
+    },
+    {
+        "_id": "68c790d54317018da37f85a9",
+        "name": "U-NEXT Pirates",
+        "players": [
+            {
+                "_id": "68c7904b4317018da37f857c",
+                "nickname": "萌新烂菜叶",
+                "zone": null
+            },
+            {
+                "_id": "68c7904b4317018da37f857d",
+                "nickname": "双眼皮鸭鸭",
+                "zone": null
+            },
+            {
+                "_id": "68c7904b4317018da37f857e",
+                "nickname": "66g",
+                "zone": null
+            },
+            {
+                "_id": "68c7904c4317018da37f857f",
+                "nickname": "听牌哒哟",
+                "zone": null
+            },
+            {
+                "_id": "68c81333c712cd022f7f301d",
+                "nickname": "頭ポンポン",
+                "zone": null
+            },
+            {
+                "_id": "68c7904c4317018da37f8581",
+                "nickname": "苏暮酒",
+                "zone": null
+            }
+        ],
+        "color": "00b0f0"
+    },
+    {
+        "_id": "68c790d64317018da37f85ab",
+        "name": "EARTH JETS",
+        "players": [
+            {
+                "_id": "68c7904d4317018da37f8583",
+                "nickname": "水瓶的爱",
+                "zone": null
+            },
+            {
+                "_id": "68c7904d4317018da37f8584",
+                "nickname": "墨骨slmt",
+                "zone": null
+            },
+            {
+                "_id": "68c7904d4317018da37f8586",
+                "nickname": "画个咖啡伊布",
+                "zone": null
+            },
+            {
+                "_id": "68c7904e4317018da37f8587",
+                "nickname": "羽霄霄",
+                "zone": null
+            },
+            {
+                "_id": "68c7904e4317018da37f8588",
+                "nickname": "随风而行与光同存",
+                "zone": null
+            },
+            {
+                "_id": "68c7904d4317018da37f8585",
+                "nickname": "浅倉南家の小胖",
+                "zone": null
+            }
+        ],
+        "color": "006400"
+    },
+    {
+        "_id": "68c790d74317018da37f85ac",
+        "name": "EX風林火山",
+        "players": [
+            {
+                "_id": "68c7904f4317018da37f858a",
+                "nickname": "顶天龙",
+                "zone": null
+            },
+            {
+                "_id": "68c7904f4317018da37f858b",
+                "nickname": "仇髙帝",
+                "zone": null
+            },
+            {
+                "_id": "68c7904f4317018da37f858c",
+                "nickname": "熊哥x",
+                "zone": null
+            },
+            {
+                "_id": "68c7904f4317018da37f858d",
+                "nickname": "メイリア丶",
+                "zone": null
+            },
+            {
+                "_id": "68c790504317018da37f858e",
+                "nickname": "相沢みなみさん",
+                "zone": null
+            },
+            {
+                "_id": "68c790504317018da37f858f",
+                "nickname": "DSXYVL",
+                "zone": null
+            }
+        ],
+        "color": "3d1717"
+    },
+    {
+        "_id": "68c790d84317018da37f85ad",
+        "name": "KADOKAWAサクラナイッ",
+        "players": [
+            {
+                "_id": "68c790514317018da37f8591",
+                "nickname": "魂天月半月半",
+                "zone": null
+            },
+            {
+                "_id": "68c790514317018da37f8592",
+                "nickname": "码字的星荧",
+                "zone": null
+            },
+            {
+                "_id": "68c790514317018da37f8593",
+                "nickname": "かなたんはなび",
+                "zone": null
+            },
+            {
+                "_id": "68c790514317018da37f8594",
+                "nickname": "有馬かな丶",
+                "zone": null
+            },
+            {
+                "_id": "68c790514317018da37f8595",
+                "nickname": "几只糖浆丶",
+                "zone": null
+            },
+            {
+                "_id": "68c790514317018da37f8596",
+                "nickname": "远蓝是超甜奶咖",
+                "zone": null
+            }
+        ],
+        "color": "ffccff"
+    },
+    {
+        "_id": "68c790d84317018da37f85ae",
+        "name": "渋谷ABEMAS",
+        "players": [
+            {
+                "_id": "684fd8cf52bffdd903db87a8",
+                "nickname": "sutin",
+                "zone": null
+            },
+            {
+                "_id": "68c790524317018da37f8598",
+                "nickname": "乱杀king",
+                "zone": null
+            },
+            {
+                "_id": "68c790524317018da37f8599",
+                "nickname": "琪琪霏霏甜爆",
+                "zone": null
+            },
+            {
+                "_id": "68c790534317018da37f859a",
+                "nickname": "Yo丶",
+                "zone": null
+            },
+            {
+                "_id": "68c8199894f867b33f6265cd",
+                "nickname": "樱満天落",
+                "zone": null
+            },
+            {
+                "_id": "68c790534317018da37f859c",
+                "nickname": "小和",
+                "zone": null
+            }
+        ],
+        "color": "d7b939"
+    },
+    {
+        "_id": "68c790d94317018da37f85af",
+        "name": "BEASTX",
+        "players": [
+            {
+                "_id": "68c790544317018da37f859e",
+                "nickname": "张之秋",
+                "zone": null
+            },
+            {
+                "_id": "68c790544317018da37f859f",
+                "nickname": "MariaH",
+                "zone": null
+            },
+            {
+                "_id": "68c790544317018da37f85a0",
+                "nickname": "浅上虅奶",
+                "zone": null
+            },
+            {
+                "_id": "68c790544317018da37f85a1",
+                "nickname": "清澄的大将",
+                "zone": null
+            },
+            {
+                "_id": "68c790554317018da37f85a2",
+                "nickname": "omg我爱你",
+                "zone": null
+            },
+            {
+                "_id": "68c790554317018da37f85a3",
+                "nickname": "曦儿",
+                "zone": null
+            }
+        ],
+        "color": "332aac"
+    }
+]
