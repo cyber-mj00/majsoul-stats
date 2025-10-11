@@ -90,6 +90,10 @@ class ContestManager:
         return self.api.get(method="contest/contest_season_player_list", unique_id=self.contest_unique_id, season_id=self.season_id, search=None, state=2, offset=offset, limit=limit)["data"]
     def get_player_stats_card(self, account_id):
         return self.api.get(method="contest/fetch_season_player_data", unique_id=self.contest_unique_id, season_id=self.season_id, account_id=account_id)["data"]
+    def get_teams(self, offset=0, limit=300):
+        return self.api.get(method="contest/fetch_contest_team_list", unique_id=self.contest_unique_id, season_id=self.season_id, offset=offset, limit=limit)["data"]
+    def get_team_members(self, team_id, offset=0, limit=10):
+        return self.api.post(method="contest/fetch_contest_team_member_list", unique_id=str(self.contest_unique_id), season_id=self.season_id, team_id=team_id, offset=offset, limit=limit)["data"]
     def get_logs(self, offset=0, limit=10):
         return self.api.get(method="contest/fetch_contest_game_records", unique_id=self.contest_unique_id, season_id=self.season_id,offset=offset, limit=limit)["data"]
     def pause_match_impl(self, uuid: str, resume: int):

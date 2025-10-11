@@ -53,6 +53,9 @@ class Player:
     def getAvgPlacement(self):
         return sum([a*b for a,b in zip([1,2,3,4], self.rank_count)]) / self.total_game_count if self.total_game_count != 0 else 0
     
+    def modifyRankPt(self, modifier):
+        self.rank_pt += modifier
+    
     def __str__(self):
         return str({'nickname': self.nickname})
     
@@ -74,6 +77,13 @@ class PlayerPool:
         try:
             idx = [p.nickname for p in self.players].index(nickname)
             self.players[idx].setTeam(team_name)
+        except ValueError as e:
+            print("Player not found.")
+    
+    def modifyPlayerPt(self, nickname, modifier):
+        try:
+            idx = [p.nickname for p in self.players].index(nickname)
+            self.players[idx].modifyRankPt(modifier)
         except ValueError as e:
             print("Player not found.")
     
@@ -132,6 +142,7 @@ class Teams:
 class Game:
     def __init__(self, game_data):
         self.uuid = game_data['uuid']
+        self.modified = {}
         self.players = self.__addPlayers(game_data)
         self.start_time = game_data['start_time']
         self.end_time = game_data['end_time']
@@ -142,7 +153,11 @@ class Game:
             # Share points in case of tie
             if game_data['result']['players'][j]["part_point_1"] == game_data['result']['players'][k]["part_point_1"]:
                 new_point = (game_data['result']['players'][j]["total_point"]+game_data['result']['players'][k]["total_point"]) / 2
+                player1 = [x['nickname'] for x in account if game_data['result']['players'][j]['seat'] == x['seat']][0]
+                self.modified[player1] = new_point - game_data['result']['players'][j]["total_point"]
                 game_data['result']['players'][j]["total_point"] = new_point
+                player2 = [x['nickname'] for x in account if game_data['result']['players'][k]['seat'] == x['seat']][0]
+                self.modified[player2] = new_point - game_data['result']['players'][k]["total_point"]
                 game_data['result']['players'][k]["total_point"] = new_point
         for i in range(4):
             result = [p for p in game_data['result']['players'] if p['seat'] == i][0]
@@ -155,23 +170,41 @@ class Game:
     
     def hasPlayed(self, nickname):
         return len([p for p in self.players if p['nickname'] == nickname]) == 1
+    
+    def hasModified(self):
+        return len(self.modified) > 0
 
 class Games:
     def __init__(self, contestId):
         self.contestId = contestId
         self.game_list: list[Game] = []
+        self.modified = {}
     
     def addGame(self, game: Game):
         self.game_list.append(game)
+        self.__addModified(game)
     
     def addGameFromDict(self, game_data):
-        self.game_list.append(Game(game_data))
+        self.game_list.append(game := Game(game_data))
+        self.__addModified(game)
+    
+    def __addModified(self, game: Game):
+        if game.hasModified():
+            for k, v in game.modified.items():
+                if k in self.modified:
+                    self.modified[k] += v
+                else:
+                    self.modified[k] = v
+
     
     def getGameFromUuid(self, uuid):
         return [g for g in self.game_list if g.uuid == uuid]
     
     def getPlayerGames(self, nickname):
         return [g for g in self.game_list if g.hasPlayed(nickname)]
+    
+    def getModified(self):
+        return self.modified
     
     def exportToDict(self):
         data_cols = ["开始时间","结束时间", "1位玩家","1位分数","1位终局点数","2位玩家","2位分数","2位终局点数","3位玩家","3位分数","3位终局点数","4位玩家","4位分数","4位终局点数","牌谱链接"]

@@ -18,6 +18,10 @@ pip install -r requirements.txt
 py stats.py
 ```
 
+## Majsoul Tourney Team Adaptation
+
+Please ensure that "Season Type" is set to "**Team**" and "Note" is set to RGB color code for each team, or the script would not work.
+
 ## Thanks
 
 https://github.com/oscarfzs/pymjsoul
