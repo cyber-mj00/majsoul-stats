@@ -41,7 +41,7 @@ def main():
     teams_rawdata = hbr1_manager.get_teams()
     i_count = 1
     for team in (teams_list := teams_rawdata["list"]):
-        print(f"Loading team {team['name']} ({i_count}/{teams_rawdata["total"]})")
+        print(f"Loading team {team['name']} ({i_count}/{teams_rawdata['total']})")
         members = hbr1_manager.get_team_members(team_id=team["team_id"])["list"]
         hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['nickname'] for p in members], team['detail']))
         for m in members:
@@ -221,7 +221,7 @@ def main():
         
         last_games = hbr1_games.getGameFromTime(last_gametime := hbr1_games.game_list[0].start_time)[::-1]
         today_matchup.set_column(0, 4, 20)
-        today_matchup.write('A1', f"{last_gametime.strftime("%m/%d")} (周{DAYS[last_gametime.weekday()]})", formats["title_red"])
+        today_matchup.write('A1', f'{last_gametime.strftime("%m/%d")} (周{DAYS[last_gametime.weekday()]})', formats["title_red"])
         teams = set([hbr1_teams.getPlayerTeam(p["nickname"]) for x in last_games for p in x.players])
         teams_game = [set([hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[0].players])]
         if ((n_last_games := len(last_games)) == 4):
