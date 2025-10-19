@@ -154,7 +154,7 @@ class Teams:
 class Game:
     def __init__(self, game_data, tz: tzinfo = None):
         self.uuid = game_data['uuid']
-        self.tz = CNTZ() if tz is None else tz
+        self.tz = tz or CNTZ()
         self.modified = {}
         self.players = self.__addPlayers(game_data)
         self.start_time = datetime.fromtimestamp(game_data['start_time'], tz=self.tz)
@@ -225,9 +225,10 @@ class Games:
     def getModified(self):
         return self.modified
     
-    def exportToDict(self):
+    def exportToDict(self, games = None):
         data_cols = ["开始时间","结束时间", "1位玩家","1位分数","1位终局点数","2位玩家","2位分数","2位终局点数","3位玩家","3位分数","3位终局点数","4位玩家","4位分数","4位终局点数","牌谱链接"]
         data = {a: [] for a in data_cols}
+        games = games or self.game_list
         #beijing_time = CNTZ()
 
         for game in self.game_list:
