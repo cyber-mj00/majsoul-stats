@@ -154,7 +154,7 @@ class Teams:
 class Game:
     def __init__(self, game_data, tz: tzinfo = None):
         self.uuid = game_data['uuid']
-        self.tz = tz or CNTZ()
+        self.tz = CNTZ() if tz is None else tz
         self.modified = {}
         self.players = self.__addPlayers(game_data)
         self.start_time = datetime.fromtimestamp(game_data['start_time'], tz=self.tz)
