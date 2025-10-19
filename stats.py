@@ -136,21 +136,11 @@ def main():
         worksheet_individual.conditional_format(
             f"D3:D{row1+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats['score']}
         )
-        worksheet_individual.conditional_format(
-            f"G3:G{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
-        )
-        worksheet_individual.conditional_format(
-            f"K3:K{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
-        )
-        worksheet_individual.conditional_format(
-            f"L3:L{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
-        )
-        worksheet_individual.conditional_format(
-            f"M3:MG{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
-        )
-        worksheet_individual.conditional_format(
-            f"N3:N{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
-        )
+        
+        for a in ['G', 'K', 'L', 'M', 'N']:
+             worksheet_individual.conditional_format(
+                f"{a}3:{a}{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
+            )
 
         worksheet_team = writer.sheets['团体个人表']
         worksheet_team.set_column(1, 2, 30)
