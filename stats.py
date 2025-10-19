@@ -14,6 +14,7 @@ from mahjongsoul.manager import *
 
 env_path = join(dirname(__file__), 'config.env')
 dotenv.load_dotenv(env_path)
+DAYS = ["一","二","三","四","五","六","日"]
 
 def readTeams(filename="teams.json"):
     with open(join(dirname(__file__), filename), encoding="utf-8") as f:
@@ -37,14 +38,17 @@ def main():
     hbr1_players = PlayerPool(os.environ.get('contest_unique_id'))
     hbr1_games = Games(os.environ.get('contest_unique_id'))
     print("Fetching teams list...")
-    for team in (teams_list := hbr1_manager.get_teams()["list"]):
-        print(f"Loading team {team['name']}")
+    teams_rawdata = hbr1_manager.get_teams()
+    i_count = 1
+    for team in (teams_list := teams_rawdata["list"]):
+        print(f"Loading team {team['name']} ({i_count}/{teams_rawdata["total"]})")
         members = hbr1_manager.get_team_members(team_id=team["team_id"])["list"]
         hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['nickname'] for p in members], team['detail']))
         for m in members:
             m["account_data"] = json.loads(m["account_data"])
             hbr1_players.addPlayer(player := Player(m, team=team['name']))
             print(f"Added player {m['nickname']} to {team['name']}")
+        i_count += 1
     
     print("Fetching game logs...")
     no_of_logs = int(hbr1_manager.get_logs()["total"])
@@ -105,19 +109,25 @@ def main():
         # Future step forward: automatic formatting
         formats = {}
         workbook = writer.book
-        formats["score"] = workbook.add_format({"bg_color": "#FAF0CE", "font_color": "#000000"})
-        formats["score_red"] = workbook.add_format({"bg_color": "#FAF0CE", "font_color": "#FF0000"})
-        formats["simple_red"] = workbook.add_format({"font_color": "#FF0000"})
-        formats["top"] = workbook.add_format({"bg_color": "#FF66CC", "font_color": "#000000"})
+        formats["score"] = workbook.add_format({"bg_color": "#FAF0CE", "font_color": "#000000", "align": "center"})
+        formats["score_red"] = workbook.add_format({"bg_color": "#FAF0CE", "font_color": "#FF0000", "align": "center"})
+        formats["simple_red"] = workbook.add_format({"font_color": "#FF0000", "align": "center"})
+        formats["top"] = workbook.add_format({"bg_color": "#FF66CC", "font_color": "#000000", "align": "center"})
         formats["title"] = workbook.add_format({"bold": True, "align": "center"})
+        formats["title_red"] = workbook.add_format({"bold": True, "align": "center", "font_color": "#FF0000"})
         formats["noteL"] = workbook.add_format({"bold": True, "align": "left"})
         formats["noteR"] = workbook.add_format({"bold": True, "align": "right"})
+        formats["center"] = workbook.add_format({"align": "center", "valign": "vcenter"})
         for team in hbr1_teams.teams:
             r,g,b = color_strtoint(team_color := team.color)
-            formats[team.name] = workbook.add_format({"bg_color": f"#{team_color}", "font_color": f"#{ContrastColor(r,g,b)}"})
+            formats[team.name] = workbook.add_format({"bg_color": f"#{team_color}", "font_color": f"#{ContrastColor(r,g,b)}", "align": "center"})
+        today_matchup = workbook.add_worksheet("每日试合")
+
         worksheet_individual = writer.sheets['个人积分表']
-        worksheet_individual.set_column(1, 2, 30)
-        worksheet_individual.set_column(6, 9, 6)
+        worksheet_individual.set_column(1, 2, 30, formats["center"])
+        worksheet_individual.set_column(3, 5, 8, formats["center"])
+        worksheet_individual.set_column(6, 9, 6, formats["center"])
+        worksheet_individual.set_column(10, 13, 8, formats["center"])
 
         worksheet_individual.merge_range("A1:N1", "炽焰天穹ML S1 2025  常规赛  个人成绩顺位表", formats["title"])
         row1, _ = df1_individual.shape
@@ -130,20 +140,22 @@ def main():
             )
 
         worksheet_individual.conditional_format(
-            f"D3:D{row1+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats['score_red']}
+            f"D3:D{row1+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats["score_red"]}
         )
         worksheet_individual.conditional_format(
-            f"D3:D{row1+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats['score']}
+            f"D3:D{row1+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats["score"]}
         )
         
         for a in ['G', 'K', 'L', 'M', 'N']:
              worksheet_individual.conditional_format(
-                f"{a}3:{a}{row1+2}", {"type": "top", "value": 1, "format": formats['top']}
+                f"{a}3:{a}{row1+2}", {"type": "top", "value": 1, "format": formats["top"]}
             )
 
         worksheet_team = writer.sheets['团体个人表']
-        worksheet_team.set_column(1, 2, 30)
-        worksheet_team.set_column(6, 9, 6)
+        worksheet_team.set_column(1, 2, 30, formats["center"])
+        worksheet_team.set_column(3, 5, 8, formats["center"])
+        worksheet_team.set_column(6, 9, 6, formats["center"])
+        worksheet_team.set_column(10, 13, 8, formats["center"])
         
         worksheet_team.merge_range("A1:N1", "炽焰天穹ML S1 2025  常规赛  个人成绩顺位表（按队伍）", formats["title"])
         row2, _ = df1_team.shape
@@ -156,15 +168,16 @@ def main():
             )
 
         worksheet_team.conditional_format(
-            f"D3:D{row2+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats['score_red']}
+            f"D3:D{row2+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats["score_red"]}
         )
         worksheet_team.conditional_format(
-            f"D3:D{row2+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats['score']}
+            f"D3:D{row2+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats["score"]}
         )
 
         worksheet_teamTotal = writer.sheets['队伍积分表']
-        worksheet_teamTotal.set_column(1, 1, 30)
-        worksheet_teamTotal.set_column(6, 9, 6)
+        worksheet_teamTotal.set_column(1, 1, 30, formats["center"])
+        worksheet_teamTotal.set_column(2, 5, 8, formats["center"])
+        worksheet_teamTotal.set_column(6, 9, 6, formats["center"])
         
         worksheet_teamTotal.merge_range("A1:J1", "炽焰天穹ML S1 2025  常规赛  队伍积分顺位表", formats["title"])
         row3, _ = df1_teamTotal.shape
@@ -176,19 +189,20 @@ def main():
             )
 
         worksheet_teamTotal.conditional_format(
-            f"C3:C{row3+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats['score_red']}
+            f"C3:C{row3+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats["score_red"]}
         )
         worksheet_teamTotal.conditional_format(
-            f"C3:C{row3+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats['score']}
+            f"C3:C{row3+2}", {"type": "cell", "criteria": ">=", "value": 0, "format": formats["score"]}
         )
         worksheet_teamTotal.conditional_format(
-            f"E3:E{row3+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats['simple_red']}
+            f"E3:E{row3+2}", {"type": "cell", "criteria": "<", "value": 0, "format": formats["simple_red"]}
         )
 
         worksheet_paifu = writer.sheets['牌谱数据']
-        worksheet_paifu.set_column(0, 1, 18)
+        worksheet_paifu.set_column(0, 1, 18, formats["center"])
         for i in range(2,17,4):
-            worksheet_paifu.set_column(i, i+1, 20)
+            worksheet_paifu.set_column(i, i+1, 20, formats["center"])
+            worksheet_paifu.set_column(i+2, i+3, 12, formats["center"])
         row4, _ = df2.shape
         
         for team in hbr1_teams.teams:
@@ -204,11 +218,39 @@ def main():
             worksheet_paifu.conditional_format(
                 f"O2:R{row4+1}", {"type": "formula", "criteria": f'=$P2="{team.name}"', "format": formats[team.name]}
             )
-
-
-
-
-
+        
+        last_games = hbr1_games.getGameFromTime(last_gametime := hbr1_games.game_list[0].start_time)[::-1]
+        today_matchup.set_column(0, 4, 20)
+        today_matchup.write('A1', f"{last_gametime.strftime("%m/%d")} (周{DAYS[last_gametime.weekday()]})", formats["title_red"])
+        teams = set([hbr1_teams.getPlayerTeam(p["nickname"]) for x in last_games for p in x.players])
+        teams_game = [set([hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[0].players])]
+        if ((n_last_games := len(last_games)) == 4):
+            teams_game.append(teams - teams_game[0])
+        
+        for i in range(len(teams_game)):
+            i_0 = 10*i+2
+            x = 0
+            teams_game_tmp = list(teams_game[i])
+            for k in range(4):
+                teamname_tmp = teams_game_tmp[k]
+                today_matchup.write(i_0-2, k+1, teamname_tmp, formats[teamname_tmp])
+            today_matchup.write(f'A{i_0}', "第1半庄", formats["title"])
+            today_matchup.write(f'A{i_0+4}', "第2半庄", formats["title"])
+            for j in range(2):
+                today_matchup.write(f'A{i_0+4*j+1}', "马点", formats["title"])
+                today_matchup.write(f'A{i_0+4*j+2}', "分数", formats["title"])
+                today_matchup.write(f'A{i_0+4*j+3}', "赛事牌谱", formats["title"])
+            
+            for u in range(n_last_games):
+                if hbr1_teams.getPlayerTeam(last_games[u].players[0]["nickname"]) in teams_game_tmp:
+                    players_team = [hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[u].players]
+                    players_idx = [teams_game_tmp.index(p) for p in players_team]
+                    for y in range(len(players_idx)):
+                        today_matchup.write(i_0-1+4*x, players_idx[y]+1, last_games[u].players[y]["nickname"], formats[players_team[y]])
+                        today_matchup.write(i_0+4*x, players_idx[y]+1, last_games[u].players[y]["part_point_1"], formats[players_team[y]])
+                        today_matchup.write(i_0+1+4*x, players_idx[y]+1, last_games[u].players[y]["total_point"] / 1000, formats[players_team[y]])
+                    today_matchup.merge_range(f"B{i_0+3+4*x}:E{i_0+3+4*x}", "https://game.maj-soul.com/1/?paipu="+last_games[u].uuid, formats["score"])
+                    x += 1
 
 if __name__ == "__main__":
     main()
