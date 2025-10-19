@@ -14,7 +14,6 @@ from mahjongsoul.manager import *
 
 env_path = join(dirname(__file__), 'config.env')
 dotenv.load_dotenv(env_path)
-USE_MAJSOUL_TEAMS = True if int(os.environ.get('use_majsoul_teams')) == 1 else False
 
 def readTeams(filename="teams.json"):
     with open(join(dirname(__file__), filename), encoding="utf-8") as f:
