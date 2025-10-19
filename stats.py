@@ -37,26 +37,15 @@ def main():
     hbr1_teams = Teams(os.environ.get('contest_unique_id'))
     hbr1_players = PlayerPool(os.environ.get('contest_unique_id'))
     hbr1_games = Games(os.environ.get('contest_unique_id'))
-    if USE_MAJSOUL_TEAMS:
-        print("Fetching teams list...")
-        for team in (teams_list := hbr1_manager.get_teams()["list"]):
-            print(f"Loading team {team['name']}")
-            members = hbr1_manager.get_team_members(team_id=team["team_id"])["list"]
-            hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['nickname'] for p in members], team['detail']))
-    else:
-        print("Loading local teams list...")
-        for team in (teams_list := readTeams()):
-            hbr1_teams.addTeam(Team(team['_id'], team['name'], [p['nickname'] for p in team['players']], team['color']))
-
-    print("Fetching players list...")
-    no_of_players = int(hbr1_manager.get_all_players_stats_card()["total"])
-    players_list = hbr1_manager.get_all_players_stats_card(limit=no_of_players+1)["list"]
-    
-    for account_id in [p['account_id'] for p in players_list]:
-        print(f"Fetching player {account_id}...")
-        player = Player(player_detail := hbr1_manager.get_player_stats_card(account_id))
-        player.setTeam(hbr1_teams.getPlayerTeam(player_detail['player']['nickname']))
-        hbr1_players.addPlayer(player)
+    print("Fetching teams list...")
+    for team in (teams_list := hbr1_manager.get_teams()["list"]):
+        print(f"Loading team {team['name']}")
+        members = hbr1_manager.get_team_members(team_id=team["team_id"])["list"]
+        hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['nickname'] for p in members], team['detail']))
+        for m in members:
+            m["account_data"] = json.loads(m["account_data"])
+            hbr1_players.addPlayer(player := Player(m, team=team['name']))
+            print(f"Added player {m['nickname']} to {team['name']}")
     
     print("Fetching game logs...")
     no_of_logs = int(hbr1_manager.get_logs()["total"])

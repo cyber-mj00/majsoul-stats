@@ -17,18 +17,20 @@ class CNTZ(tzinfo):
         return f"{self.__class__.__name__}()"
 
 class Player:
-    def __init__(self, player_data):
+    def __init__(self, player_data, team = None):
         self.dyyId = None
-        self.mjsId = player_data['player']['account_id']
-        self.nickname = player_data['player']['nickname']
-        self.team = ""
-        self.total_game_count = player_data['player']['account_data']['total_game_count']
-        self.games = player_data['player']['account_data']['recent_games']
-        self.rank_pt = player_data['rank_data']['accumulate_point']
-        self.rank_count = [player_data['rank_data']['rank_1_count'],
-                           player_data['rank_data']['rank_2_count'],
-                           player_data['rank_data']['rank_3_count'],
-                           player_data['rank_data']['rank_4_count']]
+        self.mjsId = player_data['account_id']
+        self.nickname = player_data['nickname']
+        self.team = team or ""
+        self.total_game_count = player_data['account_data']['total_game_count']
+        self.games = player_data['account_data']['recent_games']
+        self.rank_pt = player_data["account_data"]['accumulate_point']
+        self.rank, self.rank_count = self.__getRank()
+    
+    def __getRank(self):
+        rank_freq = [int(t['rank']) for t in self.games]
+        rank = {x: rank_freq.count(x) for x in range(1,5)}
+        return rank, list(rank.values())
     
     def setDyyId(self, dyyId):
         self.dyyId = dyyId
