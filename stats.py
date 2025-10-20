@@ -152,6 +152,7 @@ def main():
             )
 
         worksheet_team = writer.sheets['团体个人表']
+        worksheet_team.set_column(0, 0, 8, formats["title"])
         worksheet_team.set_column(1, 2, 30, formats["center"])
         worksheet_team.set_column(3, 5, 8, formats["center"])
         worksheet_team.set_column(6, 9, 6, formats["center"])
