@@ -233,7 +233,7 @@ class Games:
         games = games or self.game_list
         #beijing_time = CNTZ()
 
-        for game in self.game_list:
+        for game in games:
             game_data = sorted(game.players, key=lambda x:x["total_point"], reverse=True)
             data["开始时间"].append(game.start_time.strftime("%Y-%m-%d %H:%M:%S"))
             data["结束时间"].append(game.end_time.strftime("%Y-%m-%d %H:%M:%S"))

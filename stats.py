@@ -224,7 +224,7 @@ def main():
         today_matchup.write('A1', f'{last_gametime.strftime("%m/%d")} (周{DAYS[last_gametime.weekday()]})', formats["title_red"])
         teams = set([hbr1_teams.getPlayerTeam(p["nickname"]) for x in last_games for p in x.players])
         teams_game = [set([hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[0].players])]
-        if ((n_last_games := len(last_games)) == 4):
+        if (len(teams) > 4):
             teams_game.append(teams - teams_game[0])
         
         for i in range(len(teams_game)):
@@ -241,7 +241,7 @@ def main():
                 today_matchup.write(f'A{i_0+4*j+2}', "分数", formats["title"])
                 today_matchup.write(f'A{i_0+4*j+3}', "赛事牌谱", formats["title"])
             
-            for u in range(n_last_games):
+            for u in range(n_last_games := len(last_games)):
                 if hbr1_teams.getPlayerTeam(last_games[u].players[0]["nickname"]) in teams_game_tmp:
                     players_team = [hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[u].players]
                     players_idx = [teams_game_tmp.index(p) for p in players_team]
