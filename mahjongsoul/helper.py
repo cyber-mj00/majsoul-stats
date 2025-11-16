@@ -79,23 +79,23 @@ class PlayerPool:
     def addPlayerFromDict(self, player_data):
         self.players.append(Player(player_data))
     
-    def assignPlayerToTeam(self, nickname, team_name):
+    def assignPlayerToTeam(self, account_id, team_name):
         try:
-            idx = [p.nickname for p in self.players].index(nickname)
+            idx = [p.mjsId for p in self.players].index(account_id)
             self.players[idx].setTeam(team_name)
         except ValueError as e:
             print("Player not found.")
     
-    def modifyPlayerPt(self, nickname, modifier):
+    def modifyPlayerPt(self, account_id, modifier):
         try:
-            idx = [p.nickname for p in self.players].index(nickname)
+            idx = [p.mjsId for p in self.players].index(account_id)
             self.players[idx].modifyRankPt(modifier)
         except ValueError as e:
             print("Player not found.")
     
-    def modifyPlayerRank(self, nickname, rank: tuple):
+    def modifyPlayerRank(self, account_id, rank: tuple):
         try:
-            idx = [p.nickname for p in self.players].index(nickname)
+            idx = [p.mjsId for p in self.players].index(account_id)
             old, new = rank
             self.players[idx].modifyRankCount(old, new)
         except ValueError as e:
@@ -127,11 +127,11 @@ class Team:
     def __init__(self, dyyId, name, players, color=None):
         self.dyyId = dyyId
         self.name = name
-        self.players: list[str] = players
+        self.players: list[int] = players
         self.color = color
     
-    def inTeam(self, nickname):
-        return nickname in self.players
+    def inTeam(self, account_id):
+        return account_id in self.players
 
     def __str__(self):
         return str({"name": self.name, "players": self.players})
@@ -147,9 +147,9 @@ class Teams:
     def addTeam(self, team: Team):
         self.teams.append(team)
     
-    def getPlayerTeam(self, nickname):
+    def getPlayerTeam(self, account_id):
         for t in self.teams:
-            if t.inTeam(nickname):
+            if t.inTeam(account_id):
                 return t.name
         return ""
 
@@ -168,10 +168,10 @@ class Game:
             # Share points in case of tie
             if game_data['result']['players'][j]["part_point_1"] == game_data['result']['players'][k]["part_point_1"]:
                 new_point = (game_data['result']['players'][j]["total_point"]+game_data['result']['players'][k]["total_point"]) / 2
-                player1 = [x['nickname'] for x in account if game_data['result']['players'][j]['seat'] == x['seat']][0]
+                player1 = [x['account_id'] for x in account if game_data['result']['players'][j]['seat'] == x['seat']][0]
                 self.modified[player1] = {"point": new_point - game_data['result']['players'][j]["total_point"], "rank": (j, j)}
                 game_data['result']['players'][j]["total_point"] = new_point
-                player2 = [x['nickname'] for x in account if game_data['result']['players'][k]['seat'] == x['seat']][0]
+                player2 = [x['account_id'] for x in account if game_data['result']['players'][k]['seat'] == x['seat']][0]
                 self.modified[player2] = {"point": new_point - game_data['result']['players'][k]["total_point"], "rank": (k, j)}
                 game_data['result']['players'][k]["total_point"] = new_point
         for i in range(4):
@@ -180,11 +180,11 @@ class Game:
             account[i]["total_point"] = result["total_point"]
         return account
     
-    def getPlayerData(self, nickname):
-        return [p for p in self.players if p['nickname'] == nickname]
+    def getPlayerData(self, account_id):
+        return [p for p in self.players if p['account_id'] == account_id]
     
-    def hasPlayed(self, nickname):
-        return len([p for p in self.players if p['nickname'] == nickname]) == 1
+    def hasPlayed(self, account_id):
+        return len([p for p in self.players if p['account_id'] == account_id]) == 1
     
     def hasModified(self):
         return len(self.modified) > 0
@@ -218,8 +218,8 @@ class Games:
     def getGameFromUuid(self, uuid):
         return [g for g in self.game_list if g.uuid == uuid]
     
-    def getPlayerGames(self, nickname):
-        return [g for g in self.game_list if g.hasPlayed(nickname)]
+    def getPlayerGames(self, account_id):
+        return [g for g in self.game_list if g.hasPlayed(account_id)]
     
     def getGameFromTime(self, time: datetime):
         return [g for g in self.game_list if g.hasSameDate(time)]
@@ -228,7 +228,7 @@ class Games:
         return self.modified
     
     def exportToDict(self, games = None):
-        data_cols = ["开始时间","结束时间", "1位玩家","1位分数","1位终局点数","2位玩家","2位分数","2位终局点数","3位玩家","3位分数","3位终局点数","4位玩家","4位分数","4位终局点数","牌谱链接"]
+        data_cols = ["开始时间","结束时间", "1位玩家","1位ID","1位分数","1位终局点数","2位玩家","2位ID","2位分数","2位终局点数","3位玩家","3位ID","3位分数","3位终局点数","4位玩家","4位ID","4位分数","4位终局点数","牌谱链接"]
         data = {a: [] for a in data_cols}
         games = games or self.game_list
         #beijing_time = CNTZ()
@@ -238,15 +238,19 @@ class Games:
             data["开始时间"].append(game.start_time.strftime("%Y-%m-%d %H:%M:%S"))
             data["结束时间"].append(game.end_time.strftime("%Y-%m-%d %H:%M:%S"))
             data["1位玩家"].append(game_data[0]["nickname"])
+            data["1位ID"].append(game_data[0]["account_id"])
             data["1位分数"].append(game_data[0]["part_point_1"])
             data["1位终局点数"].append(game_data[0]["total_point"] / 1000)
             data["2位玩家"].append(game_data[1]["nickname"])
+            data["2位ID"].append(game_data[1]["account_id"])
             data["2位分数"].append(game_data[1]["part_point_1"])
             data["2位终局点数"].append(game_data[1]["total_point"] / 1000)
             data["3位玩家"].append(game_data[2]["nickname"])
+            data["3位ID"].append(game_data[2]["account_id"])
             data["3位分数"].append(game_data[2]["part_point_1"])
             data["3位终局点数"].append(game_data[2]["total_point"] / 1000)
             data["4位玩家"].append(game_data[3]["nickname"])
+            data["4位ID"].append(game_data[3]["account_id"])
             data["4位分数"].append(game_data[3]["part_point_1"])
             data["4位终局点数"].append(game_data[3]["total_point"] / 1000)
             data["牌谱链接"].append("https://game.maj-soul.com/1/?paipu="+game.uuid)

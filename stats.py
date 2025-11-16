@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import json
+import re
 import os
 import dotenv
 import pandas as pd
@@ -15,11 +16,6 @@ from mahjongsoul.manager import *
 env_path = join(dirname(__file__), 'config.env')
 dotenv.load_dotenv(env_path)
 DAYS = ["一","二","三","四","五","六","日"]
-
-def readTeams(filename="teams.json"):
-    with open(join(dirname(__file__), filename), encoding="utf-8") as f:
-        teams = json.loads(f.read())
-    return teams
 
 def color_strtoint(color_str):
     try:
@@ -39,11 +35,14 @@ def main():
     hbr1_games = Games(os.environ.get('contest_unique_id'))
     print("Fetching teams list...")
     teams_rawdata = hbr1_manager.get_teams()
+    
+    getRgbColor = lambda color : color if bool(re.compile(r'[a-fA-F0-9]{3}(?:[a-fA-F0-9]{3})?$').match(color)) else "ffffff"
+
     i_count = 1
     for team in (teams_list := teams_rawdata["list"]):
         print(f"Loading team {team['name']} ({i_count}/{teams_rawdata['total']})")
         members = hbr1_manager.get_team_members(team_id=team["team_id"])["list"]
-        hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['nickname'] for p in members], team['detail']))
+        hbr1_teams.addTeam(Team(team['team_id'], team['name'], [p['account_id'] for p in members], getRgbColor(team['detail'])))
         for m in members:
             m["account_data"] = json.loads(m["account_data"])
             hbr1_players.addPlayer(player := Player(m, team=team['name']))
@@ -59,10 +58,10 @@ def main():
     
     print("Handling ties...")
     modifiers = hbr1_games.getModified()
-    for p_nickname, modifier_list in modifiers.items():
+    for p_account_id, modifier_list in modifiers.items():
         for modifier in modifier_list:
-            hbr1_players.modifyPlayerPt(p_nickname, modifier["point"])
-            hbr1_players.modifyPlayerRank(p_nickname, modifier["rank"])
+            hbr1_players.modifyPlayerPt(p_account_id, modifier["point"])
+            hbr1_players.modifyPlayerRank(p_account_id, modifier["rank"])
 
     print("Generating spreadsheets...")
     #data_cols = ["队伍","选手","积分","试合数","平顺","1着","2着","3着","4着","TOP率","连对率","避四率","最高分"]
@@ -92,15 +91,16 @@ def main():
 
     print("Generating logs")
     df2 = pd.DataFrame(data=hbr1_games.exportToDict())
-    df2.insert(3,"1位队伍",df2['1位玩家'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
-    df2.insert(7,"2位队伍",df2['2位玩家'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
-    df2.insert(11,"3位队伍",df2['3位玩家'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
-    df2.insert(15,"4位队伍",df2['4位玩家'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
+    df2.insert(4,"1位队伍",df2['1位ID'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
+    df2.insert(9,"2位队伍",df2['2位ID'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
+    df2.insert(14,"3位队伍",df2['3位ID'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
+    df2.insert(19,"4位队伍",df2['4位ID'].apply(lambda x: hbr1_teams.getPlayerTeam(x)))
+    df2 = df2.drop(columns=[f'{w}位ID' for w in range(1,5)])
 
     print("Writing to spreadsheet...")
     time_now = datetime.datetime.now(tz=(beijing_time := CNTZ()))
     ContrastColor = lambda r,g,b: "000000" if (0.299 * r + 0.587 * g + 0.114 * b)/255 > 0.5 else "ffffff"
-    with pd.ExcelWriter((output_filename := os.environ.get('output_filename')+time_now.strftime("_%Y%m%d_%H%M%S")+".xlsx"), engine='xlsxwriter') as writer:
+    with pd.ExcelWriter((output_filename := os.environ.get('output_filename')+time_now.strftime("_%Y%m%d_%H%M%S")+".xlsx"), engine='xlsxwriter', engine_kwargs={"options": {'strings_to_formulas': False}}) as writer:
         df1_team.to_excel(writer, index=False, sheet_name='团体个人表', startrow=1)
         df1_individual.to_excel(writer, index=True, sheet_name='个人积分表', startrow=1)
         df1_teamTotal.to_excel(writer, index=True, sheet_name='队伍积分表', startrow=1)
@@ -223,8 +223,8 @@ def main():
         last_games = hbr1_games.getGameFromTime(last_gametime := hbr1_games.game_list[0].start_time)[::-1]
         today_matchup.set_column(0, 4, 20)
         today_matchup.write('A1', f'{last_gametime.strftime("%m/%d")} (周{DAYS[last_gametime.weekday()]})', formats["title_red"])
-        teams = set([hbr1_teams.getPlayerTeam(p["nickname"]) for x in last_games for p in x.players])
-        teams_game = [set([hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[0].players])]
+        teams = set([hbr1_teams.getPlayerTeam(p["account_id"]) for x in last_games for p in x.players])
+        teams_game = [set([hbr1_teams.getPlayerTeam(p["account_id"]) for p in last_games[0].players])]
         if (len(teams) > 4):
             teams_game.append(teams - teams_game[0])
         
@@ -243,8 +243,8 @@ def main():
                 today_matchup.write(f'A{i_0+4*j+3}', "赛事牌谱", formats["title"])
             
             for u in range(n_last_games := len(last_games)):
-                if hbr1_teams.getPlayerTeam(last_games[u].players[0]["nickname"]) in teams_game_tmp:
-                    players_team = [hbr1_teams.getPlayerTeam(p["nickname"]) for p in last_games[u].players]
+                if hbr1_teams.getPlayerTeam(last_games[u].players[0]["account_id"]) in teams_game_tmp:
+                    players_team = [hbr1_teams.getPlayerTeam(p["account_id"]) for p in last_games[u].players]
                     players_idx = [teams_game_tmp.index(p) for p in players_team]
                     for y in range(len(players_idx)):
                         today_matchup.write(i_0-1+4*x, players_idx[y]+1, last_games[u].players[y]["nickname"], formats[players_team[y]])
