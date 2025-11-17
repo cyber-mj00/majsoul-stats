@@ -100,7 +100,9 @@ def main():
     print("Writing to spreadsheet...")
     time_now = datetime.datetime.now(tz=(beijing_time := CNTZ()))
     ContrastColor = lambda r,g,b: "000000" if (0.299 * r + 0.587 * g + 0.114 * b)/255 > 0.5 else "ffffff"
-    with pd.ExcelWriter((output_filename := os.environ.get('output_filename')+time_now.strftime("_%Y%m%d_%H%M%S")+".xlsx"), engine='xlsxwriter', engine_kwargs={"options": {'strings_to_formulas': False}}) as writer:
+
+    output_filename = os.environ.get('output_filename')+time_now.strftime("_%Y%m%d_%H%M%S")+".xlsx"
+    with pd.ExcelWriter(join(dirname(__file__), output_filename), engine='xlsxwriter', engine_kwargs={"options": {'strings_to_formulas': False}}) as writer:
         df1_team.to_excel(writer, index=False, sheet_name='团体个人表', startrow=1)
         df1_individual.to_excel(writer, index=True, sheet_name='个人积分表', startrow=1)
         df1_teamTotal.to_excel(writer, index=True, sheet_name='队伍积分表', startrow=1)
