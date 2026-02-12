@@ -16,6 +16,7 @@ from mahjongsoul.manager import *
 env_path = join(dirname(__file__), 'config.env')
 dotenv.load_dotenv(env_path)
 DAYS = ["一","二","三","四","五","六","日"]
+MAX_ITER = 100 # Max number of logs Majsoul can GET at one time
 
 def color_strtoint(color_str):
     try:
@@ -50,8 +51,12 @@ def main():
         i_count += 1
     
     print("Fetching game logs...")
+    ceil = lambda n:int(-1 * n // 1 * -1)
     no_of_logs = int(hbr1_manager.get_logs()["total"])
-    game_logs = hbr1_manager.get_logs(limit=no_of_logs+1)["record_list"]
+    no_of_iters = ceil(no_of_logs/MAX_ITER)
+    game_logs = []
+    for i in range(no_of_iters):
+        game_logs += hbr1_manager.get_logs(offset=100*i, limit=100)["record_list"]
 
     for game_record in game_logs:
         hbr1_games.addGameFromDict(game_record)
